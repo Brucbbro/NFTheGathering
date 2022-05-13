@@ -202,7 +202,7 @@ export default function NFTCard({ data, style }: { style?: object; data: NFTData
             style={{ objectFit: "cover" }}
             src={data.image?.src}
             alt={`${data.name} image`}
-            fallbackSrc="/demo.png"
+            // fallbackSrc="/demo.png"
           />
         </Center>
 

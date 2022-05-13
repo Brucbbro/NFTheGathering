@@ -6,12 +6,13 @@ import { useRouter } from "next/router"
 import Page from "../../pageComponents/Page"
 import { ethers } from "ethers"
 import { WethIcon } from "../../pageComponents/Icons/WethIcon"
-import { Button, Text, Heading, Kbd, Flex, Spacer, Box } from "@chakra-ui/react"
+import { Button, Text, Heading, Kbd, Flex, Spacer, Box, Skeleton } from "@chakra-ui/react"
 import NFTDataProvider from "../../pageComponents/NFTDataProvider"
 import NFTAttributes from "../../pageComponents/NFTAttributes"
 import NFTOffers from "../../pageComponents/NFTOffers"
 import WalletAddress from "../../pageComponents/WalletAddress"
 import { NFTData } from "../../types"
+import useNFTData from "../../pageComponents/NFTDataProvider"
 
 const Home: NextPage = () => {
   const router = useRouter()
@@ -58,16 +59,9 @@ const Home: NextPage = () => {
   }
   const { data: collStats, isLoading: isStatsLoading } = useCollectionStats(collection as string)
   const { data: collData, isLoading: isCollLoading, error: collError } = useCollectionData(collection as string)
+  const nftData = useNFTData({ collection: { ...collData, stats: collStats || null }, tokenId: currentTokenId })
 
-  const Summary = ({ data }: { data: NFTData }) => {
-    return (
-      <>
-        <Text>
-          Owner: <WalletAddress addr={data.owner || ""} />
-        </Text>
-      </>
-    )
-  }
+
 
   return (
     <Page>
@@ -86,28 +80,45 @@ const Home: NextPage = () => {
           </Text>
         </span>
       )}
-      <Heading as={"span"}>#{currentTokenId}</Heading>
-
-      {collection && currentTokenId && (
-        <Flex position={"relative"} m={2} direction="column" alignItems="center">
-          <NFTDataProvider collection={{ ...collData, stats: collStats || null }} tokenId={currentTokenId}>
-            <Summary />
-            <NFTCard />
-            <Flex alignItems={"center"} my={4}>
-              <Button w="24" onClick={prevNFT}>
-                Previous
-              </Button>{" "}
-              <Kbd m={2}>⬅</Kbd>
-              <Kbd m={2}>➡</Kbd>{" "}
-              <Button w="24" onClick={nextNFT}>
-                Next
-              </Button>
+      <Text>
+        <Heading as={"span"}>#{currentTokenId}</Heading>
+        <Text as={"span"}>
+          Owner: <WalletAddress addr={nftData.owner || ""} />
+        </Text>
+      </Text>
+      <Flex position={"relative"} m={2} direction="row" flexWrap={"wrap"} justifyContent={"space-evenly"}>
+        {collection && currentTokenId && (
+          <>
+            <Flex direction={"column"} w={350}>
+              <NFTCard data={nftData} />
+              <Flex alignItems={"center"} my={4}>
+                <Button w="24" onClick={prevNFT}>
+                  Previous
+                </Button>{" "}
+                <Text fontSize={"xs"} m={2}>
+                  or
+                </Text>
+                <Kbd mr={4}>⬅</Kbd>
+                <Kbd ml={4}>➡</Kbd>{" "}
+                <Text fontSize={"xs"} m={2}>
+                  or
+                </Text>
+                <Button w="24" onClick={nextNFT}>
+                  Next
+                </Button>
+              </Flex>
             </Flex>
-            <NFTAttributes />
-            <NFTOffers />
-          </NFTDataProvider>
-        </Flex>
-      )}
+          </>
+        )}
+        {!collection || !currentTokenId ? (
+          <Skeleton flex={1} />
+        ) : (
+          <Flex direction={"column"} w={"md"}>
+            <NFTAttributes data={nftData} />
+            <NFTOffers data={nftData} />
+          </Flex>
+        )}
+      </Flex>
     </Page>
   )
 }

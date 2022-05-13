@@ -17,12 +17,10 @@ const safeDefaults: NFTData = {
   offers: [],
 }
 
-export default function NFTDataProvider({
-  children,
+export default function useNFTData({
   collection,
   tokenId,
 }: {
-  children: any
   collection: LRCollection & { stats: LRCollStats }
   tokenId: string
 }) {
@@ -58,15 +56,5 @@ export default function NFTDataProvider({
     offers: tokenOffers || [],
   }
 
-  return (
-    <>
-      {React.Children.map(children, child => {
-        if (React.isValidElement(child)) {
-          // @ts-ignore
-          return React.cloneElement(child, { data })
-        }
-        return null
-      })}
-    </>
-  )
+  return data
 }

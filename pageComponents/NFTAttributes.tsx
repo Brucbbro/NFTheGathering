@@ -2,7 +2,7 @@ import React from "react"
 import { NFTData } from "../types"
 import { Wrap, WrapItem, Stat, StatNumber, StatLabel, Heading, Box } from "@chakra-ui/react"
 
-export default function NFTAttributes({ data, ...props }: { data: NFTData; props: object }) {
+export default function NFTAttributes({ data, ...props }: { data: NFTData; props?: object }) {
   return (
     <Box mt={2} {...props}>
       <Heading fontSize={"lg"}>Traits</Heading>

@@ -7,7 +7,7 @@ export default function Page({ children }) {
   return (
     <VStack w="100%" h="100vh">
       <Header />
-      <Container>{children}</Container>
+      {children}
     </VStack>
   )
 }
