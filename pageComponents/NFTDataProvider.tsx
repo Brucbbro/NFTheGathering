@@ -3,29 +3,15 @@ import { ethers } from "ethers"
 import { useNFTTokenData, useTokenOffers } from "../hooks"
 import { LRCollection, LRCollStats, NFTData } from "../types"
 
-const safeDefaults: NFTData = {
-  collection: null,
-  floorPrice: 0,
-  attributes: [],
-  collectionAddress: "",
-  description: "",
-  image: { src: "" },
-  name: "",
-  owner: "",
-  tokenId: "",
-  totalSupply: 10000,
-  offers: [],
-}
-
 export default function useNFTData({
   collection,
   tokenId,
 }: {
-  collection: LRCollection & { stats: LRCollStats }
+  collection: LRCollection & { stats?: LRCollStats }
   tokenId: string
 }) {
   const { data: apiData, isLoading: isTokenDataLoading, error } = useNFTTokenData(collection.address, tokenId)
-  const [owner, setNFTOwner] = React.useState<string | null>(null)
+  const [owner, setNFTOwner] = React.useState<string>("")
   const { data: tokenOffers, isLoading: isOffersLoading } = useTokenOffers(collection.address, tokenId)
   React.useEffect(() => {
     if (apiData?.tokenId) {
@@ -33,7 +19,7 @@ export default function useNFTData({
       const provider = new ethers.providers.Web3Provider(window?.ethereum)
       const collectionContract = new ethers.Contract(
         collection.address,
-        ["function ownerOf(uint256 tokenId) view returns (address)", "function totalSupply() view returns (uint256)"],
+        ["function ownerOf(uint256 tokenId) view returns (address)"],
         provider,
       )
 
@@ -42,13 +28,11 @@ export default function useNFTData({
         .then((res: string) => {
           setNFTOwner(res)
         })
-        .catch((e: any) => setNFTOwner(null))
-      // collectionContract.totalSupply().then((n: BigNumber) => setTotalSupply(n.toNumber()))
+        .catch((e: any) => setNFTOwner(""))
     }
   }, [collection.address, apiData?.tokenId])
 
   const data: NFTData & { isLoading: boolean; owner: string } = {
-    ...safeDefaults,
     ...apiData,
     isLoading: isTokenDataLoading || isOffersLoading,
     owner,

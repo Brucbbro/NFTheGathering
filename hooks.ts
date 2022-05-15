@@ -1,4 +1,4 @@
-import { useQuery, UseQueryResult } from "react-query"
+import { QueryObserverSuccessResult, useQuery, UseQueryResult } from "react-query"
 import { request, gql } from "graphql-request"
 import axios from "axios"
 import { ethers } from "ethers"
@@ -14,7 +14,22 @@ import { LRCollection, LRCollStats, LROrder, LRToken } from "./types"
 
 const rateLimitedAxios = rateLimit(axios.create(), { maxRequests: 60, perMilliseconds: 60, maxRPS: 3 })
 
+/*
+TODO: At the time of writing useQuery incorrectly assigns result types
+(treats every field as optional even when initialData is supplied)
+The typecast on return its not really safe and should be removed once this
+https://github.com/tannerlinsley/react-query/pull/3557
+gets merged
+ */
+
 export function useNFTTokenData(collectionAddr: string, tokenId: string) {
+  const initialData: LRToken = {
+    attributes: [],
+    description: "",
+    image: { src: "" },
+    name: "",
+    tokenId: "",
+  }
   return useQuery<LRToken>(
     ["token", collectionAddr, tokenId],
     async () => {
@@ -52,11 +67,21 @@ export function useNFTTokenData(collectionAddr: string, tokenId: string) {
       retry: 2,
       refetchOnWindowFocus: false,
       enabled: !!collectionAddr && !!tokenId,
+      initialData,
     },
-  )
+  ) as QueryObserverSuccessResult<LRToken, never>
 }
 
 export function useCollectionData(collectionAddr: string) {
+  const initialData: LRCollection = {
+    address: "",
+    description: "",
+    isVerified: false,
+    name: "",
+    owner: "",
+    symbol: "",
+    type: "ERC721",
+  }
   return useQuery<LRCollection>(
     ["info", collectionAddr],
     async () => {
@@ -69,8 +94,9 @@ export function useCollectionData(collectionAddr: string) {
       retry: 1,
       refetchOnWindowFocus: false,
       enabled: !!collectionAddr,
+      initialData: initialData,
     },
-  )
+  ) as QueryObserverSuccessResult<LRCollection, never>
 }
 
 export function useCollectionStats(collectionAddr: string) {

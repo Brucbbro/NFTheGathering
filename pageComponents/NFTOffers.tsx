@@ -15,7 +15,7 @@ function excludeExpired(offer: LROrder) {
   return offer.endTime.valueOf() * 1000 > new Date().valueOf()
 }
 
-export default function NFTOffers({ data, ...rest }: { data: NFTData }) {
+export default function NFTOffers({ data }: { data: NFTData }) {
   const orders: LROrder[] = data?.offers || []
   return (
     <Box mt={10} w={"100%"}>
@@ -29,25 +29,33 @@ export default function NFTOffers({ data, ...rest }: { data: NFTData }) {
       ) : (
         orders
           .filter(excludeExpired)
-          .slice(0, 10)
+          .slice(0, 5)
           .map((order, index) => (
             <>
-              <Flex key={index} justifyContent={"space-between"} minH={14}>
+              <Flex key={index} justifyContent={"space-between"} minH={8}>
                 <Text flex={1}>
-                  From <WalletAddress addr={order.signer} />
+                  <Text fontSize={"x-small"} as={"span"} mr={1}>
+                    From
+                  </Text>
+                  <WalletAddress addr={order.signer} />
                 </Text>
                 <Text flex={1}>
                   <WethIcon />
                   {parseFloat(formatEther(order.price)).toFixed(2)}
                   {
-                    <Badge colorScheme={"green"} ml={1} fontSize={"xx-small"}>
+                    <Badge colorScheme={"green"} ml={1} fontSize={"xx-small"} variant={"outline"}>
                       {order.strategy.toLowerCase() === StrategyAnyItemFromCollectionForFixedPrice
                         ? "collection"
                         : "offer"}
                     </Badge>
                   }
                 </Text>
-                <Text flex={1}>expires {dayjs(order.endTime.valueOf() * 1000).fromNow()}</Text>
+                <Text flex={1}>
+                  <Text fontSize={"x-small"} as={"span"} mr={1}>
+                    expires
+                  </Text>
+                  {dayjs(order.endTime.valueOf() * 1000).fromNow()}
+                </Text>
               </Flex>
               {index < 9 && <Divider />}
             </>

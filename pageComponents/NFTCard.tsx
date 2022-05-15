@@ -262,7 +262,8 @@ export default function NFTCard({ data, style }: { style?: object; data: NFTData
           justifyContent={"space-between"}
         >
           <Text flex={1}>
-            {_.padStart(data.tokenId, String(data.totalSupply).length, "0")}/{data.totalSupply}
+            {_.padStart(data.tokenId, String(data.collection?.stats?.totalSupply).length - 1, "0")}/
+            {data.collection?.stats?.totalSupply}
           </Text>
 
           <Center

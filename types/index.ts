@@ -4,56 +4,20 @@ export interface NFTData {
   name: string
   description: string
   image: { src: string }
-  collectionAddress: string
   tokenId: string
   attributes: { displayType: string; value: string; traitType: string }[]
   owner: string | null
-  totalSupply: number
-  floorPrice: number
-  collection: (LRCollection & { stats: LRCollStats | null }) | null
+  collection?: LRCollection & { stats?: LRCollStats }
   offers: LROrder[] | null
 }
 
-export interface LROrder {
-  //taken from https://github.com/LooksRare/looksrare-sdk/blob/master/src/types/orders.ts
-  isOrderAsk: boolean // true --> ask / false --> bid
-  signer: string
-  price: BigNumberish
-  tokenId: BigNumberish
-  minPercentageToAsk: BigNumberish
-  params: any[]
-  endTime: Date
-  strategy: string
-  status: "VALID" | "EXPIRED" | "CANCELLED" | "EXECUTED"
-}
-
-export interface LRCollection {
-  address: string
-  owner: string
-  name: string
-  description: string
-  symbol: string
-  type: "ERC721" | "ERC1155"
-  websiteLink: string
-  facebookLink: string
-  twitterLink: string
-  instagramLink: string
-  telegramLink: string
-  mediumLink: string
-  discordLink: string
-  isVerified: boolean
-  isExplicit: boolean
-}
-
 export interface LRToken {
-  id: number
-  collectionAddress: string
+  name: string
   tokenId: string
-  tokenURI: string
-  imageURI: string
-  isExplicit: true
-  isAnimated: true
-  flag: string
+  description: string
+  image: {
+    src: string
+  }
   collection?: {
     address: string
     owner: string
@@ -76,6 +40,29 @@ export interface LRToken {
     value: string
     displayType: string
   }[]
+}
+
+export interface LROrder {
+  //taken from https://github.com/LooksRare/looksrare-sdk/blob/master/src/types/orders.ts
+  isOrderAsk: boolean // true --> ask / false --> bid
+  signer: string
+  price: BigNumberish
+  tokenId: BigNumberish
+  minPercentageToAsk: BigNumberish
+  params: any[]
+  endTime: Date
+  strategy: string
+  status: "VALID" | "EXPIRED" | "CANCELLED" | "EXECUTED"
+}
+
+export interface LRCollection {
+  address: string
+  owner: string
+  name: string
+  description: string
+  symbol: string
+  type: "ERC721" | "ERC1155"
+  isVerified: boolean
 }
 
 export interface LRCollStats {
