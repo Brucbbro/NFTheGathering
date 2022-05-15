@@ -8,7 +8,7 @@ export interface NFTData {
   attributes: { displayType: string; value: string; traitType: string }[]
   owner: string | null
   collection?: LRCollection & { stats?: LRCollStats }
-  offers: LROrder[] | null
+  orders: LROrder[] | null
 }
 
 export interface LRToken {

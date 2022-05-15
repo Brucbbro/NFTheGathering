@@ -1,22 +1,7 @@
 import React from "react"
-import { useWalletStore } from "../stateManagement"
-import { BigNumber, ethers } from "ethers"
+import { ethers } from "ethers"
 import _ from "lodash"
-import {
-  Center,
-  Wrap,
-  Image,
-  Text,
-  HStack,
-  Flex,
-  Tooltip,
-  Box,
-  Spacer,
-  chakra,
-  LinkOverlay,
-  Fade,
-  Spinner,
-} from "@chakra-ui/react"
+import { Center, Image, Text, Flex, Tooltip, Box, Spacer, Fade, Spinner, LinkOverlay, Link } from "@chakra-ui/react"
 import { WethIcon } from "./Icons/WethIcon"
 import { NFTData } from "../types"
 import { formatEther } from "ethers/lib/utils"
@@ -42,12 +27,12 @@ const TextFrame = (props: any) => (
   />
 )
 
-const ManaCircle = ({ style = {}, digits = 1, ...props }) => (
+const ManaCircle = ({ digits = 1, ...props }) => (
   <Center
     {...props}
     style={{
-      ...style,
-      fontWeight: "500",
+      fontWeight: "600",
+      paddingBottom: 1,
       fontSize: `${16 / Math.sqrt(digits)}px`,
       borderRadius: "50%",
       marginLeft: 3,
@@ -61,13 +46,13 @@ const ManaCircle = ({ style = {}, digits = 1, ...props }) => (
 
 function priceToRarity(collectionFloorPrice: number, tokenAskPrice: number) {
   const floorAskRatio = tokenAskPrice / collectionFloorPrice
-  if (floorAskRatio <= 1.1) {
+  if (floorAskRatio <= 1.3) {
     return 0 //common
-  } else if (floorAskRatio <= 1.25) {
-    return 1 //uncommon
   } else if (floorAskRatio <= 1.55) {
+    return 1 //uncommon
+  } else if (floorAskRatio <= 1.95) {
     return 2 //rare
-  } else if (floorAskRatio > 1.55) {
+  } else if (floorAskRatio > 2.35) {
     return 3 //mythic
   }
 }
@@ -90,12 +75,10 @@ const RarityBadge = ({ label = "", rarity = 0 }) => {
       WebkitBackgroundClip: "text",
       WebkitTextFillColor: "transparent",
       WebkitTextStroke: "0.7px #111",
-
       color: "#655125",
     },
     {
       background: "-webkit-linear-gradient(45deg,#be3402,#e1948c,#be3402)",
-
       WebkitBackgroundClip: "text",
       WebkitTextFillColor: "transparent",
       WebkitTextStroke: "0.7px #111",
@@ -120,16 +103,14 @@ export default function NFTCard({ data, style }: { style?: object; data: NFTData
   from the collection floor. Could get it from websites like rarity.sniper but the client is already making quite
   a number of requests: it would be better done server side / with a cloud function and possibly with a cache layer.
    */
-  const highestTokenOffer = data.offers?.length ? data.offers.at(-1) : null
+  const highestTokenOffer = data.orders?.length ? data.orders[0] : null
   const floorPrice = parseFloat(formatEther(data.collection?.stats?.floorPrice || 0))
   const estimatedValue = highestTokenOffer
     ? parseFloat(formatEther(highestTokenOffer.price)) *
       (1 + ethers.BigNumber.from(highestTokenOffer.minPercentageToAsk).div(100000).toNumber())
     : floorPrice
-
   const shouldHideDescriptionToFitAttributes =
-    data.attributes.map(a => a.value).join(",").length > 92 || data.attributes.length > 7
-
+    data.attributes && (data.attributes.map(a => a.value).join(",").length > 92 || data.attributes.length > 7)
   return data.isLoading ? (
     <Flex
       p={3}
@@ -184,16 +165,18 @@ export default function NFTCard({ data, style }: { style?: object; data: NFTData
               </Text>
             </Center>
             <Spacer />
-            <Center>
-              {highestTokenOffer && Math.round(estimatedValue) > 0 && (
-                <ManaCircle digits={String(Math.round(estimatedValue)).length}>
-                  <Text>{Math.round(estimatedValue)}</Text>
+            <Tooltip label={"Mana cost - Made up by the highest value among ask price and collection floor price."}>
+              <Center>
+                {highestTokenOffer && Math.round(estimatedValue) > 0 && (
+                  <ManaCircle digits={String(Math.round(estimatedValue)).length}>
+                    <Text>{Math.round(estimatedValue)}</Text>
+                  </ManaCircle>
+                )}
+                <ManaCircle>
+                  <WethIcon />
                 </ManaCircle>
-              )}
-              <ManaCircle>
-                <WethIcon />
-              </ManaCircle>
-            </Center>
+              </Center>
+            </Tooltip>
           </Flex>
         </TextFrame>
         <Center style={insetStyle} bg={"black"}>
@@ -216,8 +199,12 @@ export default function NFTCard({ data, style }: { style?: object; data: NFTData
             </Center>
             <Spacer />
             <Center>
-              <Tooltip label={data?.collection?.name}>
-                <RarityBadge label={data?.collection?.symbol} rarity={priceToRarity(floorPrice, estimatedValue)} />
+              <Tooltip
+                label={"Rarity is naively determined by how much the ask price differs from collection floor price."}
+              >
+                <span>
+                  <RarityBadge label={data?.collection?.symbol} rarity={priceToRarity(floorPrice, estimatedValue)} />
+                </span>
               </Tooltip>
             </Center>
           </Flex>
@@ -280,20 +267,20 @@ export default function NFTCard({ data, style }: { style?: object; data: NFTData
             style={insetStyle}
           >
             <Tooltip
-              title={
+              label={
                 data?.collection?.isVerified
                   ? "Verified on LooksRare"
                   : "This collection is not yet verified on LooksRare"
               }
             >
               <span>
-                <LinkOverlay
+                <Link
                   href={`https://looksrare.org/collections/${data.collection?.address}/${data.tokenId}`}
                   target={"_blank"}
                   rel={"noreferrer"}
                 >
                   {data?.collection?.isVerified ? <span>✔</span> : <span>✖</span>}
-                </LinkOverlay>
+                </Link>
               </span>
             </Tooltip>
           </Center>

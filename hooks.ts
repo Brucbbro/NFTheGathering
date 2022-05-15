@@ -1,7 +1,7 @@
 import { QueryObserverSuccessResult, useQuery, UseQueryResult } from "react-query"
 import { request, gql } from "graphql-request"
 import axios from "axios"
-import { ethers } from "ethers"
+import { BigNumber, ethers } from "ethers"
 import rateLimit from "axios-rate-limit"
 import {
   GRAPHQL_ENDPOINT,
@@ -15,7 +15,7 @@ import { LRCollection, LRCollStats, LROrder, LRToken } from "./types"
 const rateLimitedAxios = rateLimit(axios.create(), { maxRequests: 60, perMilliseconds: 60, maxRPS: 3 })
 
 /*
-TODO: At the time of writing useQuery incorrectly assigns result types
+REMINDME: At the time of writing useQuery incorrectly assigns result types
 (treats every field as optional even when initialData is supplied)
 The typecast on return its not really safe and should be removed once this
 https://github.com/tannerlinsley/react-query/pull/3557
@@ -48,13 +48,6 @@ export function useNFTTokenData(collectionAddr: string, tokenId: string) {
                 displayType
                 traitType
                 value
-              }
-              collection {
-                name
-                symbol
-                type
-                isVerified
-                totalSupply
               }
             }
           }
@@ -116,7 +109,7 @@ export function useCollectionStats(collectionAddr: string) {
   )
 }
 
-export function useTokenOffers(collectionAddr: string, tokenId: string) {
+export function useTokenOrders(collectionAddr: string, tokenId: string) {
   return useQuery<LROrder[] | null>(
     ["orders", "offers", collectionAddr, tokenId],
     async () => {
@@ -124,7 +117,7 @@ export function useTokenOffers(collectionAddr: string, tokenId: string) {
         params: {
           collection: collectionAddr,
           status: ["VALID"],
-          isOrderAsk: false,
+          // isOrderAsk: false,
           currency: WETH_ADDRESS,
           sort: "PRICE_DESC",
           strategy: StrategyStandardSaleForFixedPrice,
@@ -141,7 +134,8 @@ export function useTokenOffers(collectionAddr: string, tokenId: string) {
           strategy: StrategyAnyItemFromCollectionForFixedPrice,
         },
       })
-      return [...collectionResponse.data.data, ...tokenResponse.data.data] as LROrder[]
+      const mergeOrders = [...tokenResponse.data.data, ...collectionResponse.data.data]
+      return mergeOrders.sort((a, b) => (BigNumber.from(a.price).gt(b.price) ? -1 : 1)) as LROrder[]
     },
     {
       retry: 1,

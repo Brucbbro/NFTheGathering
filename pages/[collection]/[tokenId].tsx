@@ -1,16 +1,19 @@
 import React from "react"
 import type { NextPage } from "next"
-import NFTCard from "../../pageComponents/NFTCard"
-import { useCollectionData, useCollectionStats } from "../../hooks"
 import { useRouter } from "next/router"
+import { Text, Heading, Kbd, Flex, Skeleton, Box, VStack } from "@chakra-ui/react"
+import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons"
+import { formatEther } from "ethers/lib/utils"
+
+import { useCollectionData, useCollectionStats } from "../../hooks"
+import NFTCard from "../../pageComponents/NFTCard"
 import Page from "../../pageComponents/Page"
-import { ethers } from "ethers"
-import { WethIcon } from "../../pageComponents/Icons/WethIcon"
-import { Button, Text, Heading, Kbd, Flex, Spacer, Box, Skeleton } from "@chakra-ui/react"
 import NFTAttributes from "../../pageComponents/NFTAttributes"
 import NFTOffers from "../../pageComponents/NFTOffers"
 import WalletAddress from "../../pageComponents/WalletAddress"
 import useNFTData from "../../pageComponents/NFTDataProvider"
+import NFTCollectionSummary from "../../pageComponents/NFTCollectionSummary"
+import NFTListingInfo from "../../pageComponents/NFTListingInfo"
 
 const Home: NextPage = () => {
   const router = useRouter()
@@ -59,67 +62,58 @@ const Home: NextPage = () => {
     )
   }
 
-  //TODO replace all elements with skeleton components to ease in loading
-
-  //TODO tooltip verified collection on card
-
-  //TODO mana cost tooltip as ETH value
-
-  //Todo axios.get isAskBid to calculate rarity (now only checking bids)
+  const listedPrice =
+    nftData.orders?.length && nftData.orders[0].isOrderAsk ? formatEther(nftData.orders[0].price) : null
 
   return (
     <Page>
-      {collStats && (
-        <span>
-          {!isCollLoading && <Text fontSize={"sm"}>{collData?.name}</Text>}
-          <Text color={"dimgray"} fontSize={"xs"}>
-            floor:{" "}
-            <Text as={"span"} color={"initial"}>
-              {ethers.utils.formatEther(collStats?.floorPrice || 0)} <WethIcon />
-            </Text>
-            unique owners:{" "}
-            <Text as={"span"} color={"initial"}>
-              {((collStats.countOwners / collStats.totalSupply) * 100).toFixed(2)}%
-            </Text>
-          </Text>
-        </span>
-      )}
-      <Text p={4}>
+      <Box mb={5} mt="0" mx={3} display="flex" flexDirection={"row"} alignSelf={"center"} alignItems={"center"}>
+        <Kbd mr={4} onClick={prevNFT} _hover={{ cursor: "pointer" }}>
+          <ArrowBackIcon />
+        </Kbd>
         <Heading as={"span"} m={4}>
           #{currentTokenId}
         </Heading>
-        <Text as={"span"}>
-          Owner: <WalletAddress addr={nftData.owner || ""} />
-        </Text>
-      </Text>
-      <Flex position={"relative"} m={2} direction="row" flexWrap={"wrap"} justifyContent={"space-evenly"}>
+        <Kbd ml={4} onClick={nextNFT} _hover={{ cursor: "pointer" }}>
+          <ArrowForwardIcon />
+        </Kbd>{" "}
+      </Box>
+      <Flex
+        position={"relative"}
+        m={2}
+        direction="row"
+        flexWrap={"wrap"}
+        justifyContent={"space-around"}
+        alignItems={"flex-start"}
+      >
         {collection && currentTokenId && (
-          <>
-            <Flex direction={"column"} w={350}>
-              <NFTCard data={nftData} />
-              <Flex alignItems={"center"} my={4}>
-                <Button w="20" onClick={prevNFT} size={"xs"}>
-                  Previous
-                </Button>{" "}
-                <Text fontSize={"xs"} m={2}>
-                  or
-                </Text>
-                <Kbd mr={4}>⬅</Kbd>
-                <Kbd ml={4}>➡</Kbd>{" "}
-                <Text fontSize={"xs"} m={2}>
-                  or
-                </Text>
-                <Button w="20" onClick={nextNFT} size={"xs"}>
-                  Next
-                </Button>
-              </Flex>
-            </Flex>
-          </>
+          <Flex direction={"column"} px={[0, 14, 30]} py={4} justifyContent={"center"}>
+            <NFTCard data={nftData} />
+          </Flex>
         )}
         {!collection || !currentTokenId ? (
           <Skeleton flex={1} />
         ) : (
-          <Flex direction={"column"} w={"md"}>
+          <Flex direction={"column"} w={["xs", "sm", "lg"]} p={4}>
+            <Flex justifyContent={"space-between"} alignItems={"flex-start"} mt={0} color={"gray"}>
+              <VStack spacing={4} alignItems={"flex-start"}>
+                {nftData.owner ? (
+                  <Text as={"span"}>
+                    Owned by
+                    <Text color={"initial"} as={"span"}>
+                      &nbsp;
+                      <WalletAddress addr={nftData.owner || ""} />
+                    </Text>
+                  </Text>
+                ) : (
+                  <Box h={5} />
+                )}
+                <Text color={"gray"}>
+                  {nftData.isLoading ? <Skeleton h={5} w={24} /> : <NFTListingInfo listingPrice={listedPrice} />}
+                </Text>
+              </VStack>
+              <NFTCollectionSummary collStats={collStats} isLoading={isCollLoading} collData={collData} />
+            </Flex>
             <NFTAttributes data={nftData} />
             <NFTOffers data={nftData} />
           </Flex>

@@ -17,8 +17,12 @@ export default function WalletConnectButton() {
     }
   }
   return walletAddress ? (
-    <Button disabled>{walletAddress.substring(2, 8)}</Button>
+    <Button colorScheme={"blue"} disabled>
+      {walletAddress.substring(2, 8)}
+    </Button>
   ) : (
-    <Button onClick={connectWallet}>CONNECT</Button>
+    <Button colorScheme={"blue"} onClick={connectWallet}>
+      CONNECT
+    </Button>
   )
 }
