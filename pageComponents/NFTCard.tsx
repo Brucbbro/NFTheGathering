@@ -127,8 +127,9 @@ export default function NFTCard({ data, style }: { style?: object; data: NFTData
       (1 + ethers.BigNumber.from(highestTokenOffer.minPercentageToAsk).div(100000).toNumber())
     : floorPrice
 
-  const attributesTakeUpTooMuchSpace =
+  const shouldHideDescriptionToFitAttributes =
     data.attributes.map(a => a.value).join(",").length > 92 || data.attributes.length > 7
+
   return data.isLoading ? (
     <Flex
       p={3}
@@ -240,7 +241,7 @@ export default function NFTCard({ data, style }: { style?: object; data: NFTData
               </Text>
             </Box>
             <Spacer />
-            {!attributesTakeUpTooMuchSpace && (
+            {!shouldHideDescriptionToFitAttributes && (
               <Box overflow={"hidden"}>
                 <Text fontFamily={"serif"} fontSize={"12px"} as={"i"} noOfLines={3}>
                   {data.description}

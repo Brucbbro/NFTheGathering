@@ -14,9 +14,9 @@ export default function useNFTData({
   const [owner, setNFTOwner] = React.useState<string>("")
   const { data: tokenOffers, isLoading: isOffersLoading } = useTokenOffers(collection.address, tokenId)
   React.useEffect(() => {
-    if (apiData?.tokenId) {
-      //@ts-ignore window.ethereum is injected by metamask
-      const provider = new ethers.providers.Web3Provider(window?.ethereum)
+    //@ts-ignore window.ethereum is injected by metamask
+    if (apiData?.tokenId && window.ethereum) {
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
       const collectionContract = new ethers.Contract(
         collection.address,
         ["function ownerOf(uint256 tokenId) view returns (address)"],
