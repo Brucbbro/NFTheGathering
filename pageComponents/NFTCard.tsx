@@ -113,6 +113,7 @@ export default function NFTCard({ data, style }: { style?: object; data: NFTData
     : floorPrice
   const shouldHideDescriptionToFitAttributes =
     data.attributes && (data.attributes.map(a => a.value).join(",").length > 92 || data.attributes.length > 7)
+
   return data.isLoading ? (
     <Flex
       p={3}
