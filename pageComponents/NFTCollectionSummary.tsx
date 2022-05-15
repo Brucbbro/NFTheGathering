@@ -24,9 +24,10 @@ export default function NFTCollectionSummary({
       <Text color={"dimgray"} fontSize={"xs"}>
         floor:{" "}
         <Text as={"span"} color={"initial"}>
-          {ethers.utils.formatEther(collStats?.floorPrice || 0)} <WethIcon />
+          {ethers.utils.formatEther(collStats?.floorPrice || 0)}
+          <WethIcon />
         </Text>
-        unique owners:{" "}
+        &nbsp;unique owners:{" "}
         <Text as={"span"} color={"initial"}>
           {((collStats.countOwners / collStats.totalSupply) * 100).toFixed(2)}%
         </Text>

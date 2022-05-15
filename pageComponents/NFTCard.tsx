@@ -1,7 +1,7 @@
 import React from "react"
 import { ethers } from "ethers"
 import _ from "lodash"
-import { Center, Image, Text, Flex, Tooltip, Box, Spacer, Fade, Spinner, LinkOverlay, Link } from "@chakra-ui/react"
+import { Center, Image, Text, Flex, Tooltip, Box, Spacer, Fade, Spinner, Link } from "@chakra-ui/react"
 import { WethIcon } from "./Icons/WethIcon"
 import { NFTData } from "../types"
 import { formatEther } from "ethers/lib/utils"

@@ -9,7 +9,8 @@ export default function NFTListingInfo({ listingPrice }: { listingPrice: string 
     <>
       Listed for
       <Text as={"span"} color={"initial"}>
-        &nbsp;{listingPrice} <WethIcon />
+        &nbsp;{listingPrice}&nbsp;
+        <WethIcon />
       </Text>
     </>
   )
