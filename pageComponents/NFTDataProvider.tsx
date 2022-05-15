@@ -44,7 +44,6 @@ export default function useNFTData({
     }
   }, [collection, apiData?.tokenId, wallet])
 
-  console.log({ apiData })
   const data: NFTData & { isLoading: boolean; owner: string } = {
     ...apiData,
     isLoading: !apiData.tokenId || isTokenDataLoading || isOffersLoading,

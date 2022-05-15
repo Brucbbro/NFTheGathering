@@ -109,7 +109,7 @@ const Home: NextPage = () => {
                   <Box h={5} />
                 )}
                 <Text color={"gray"}>
-                  {nftData.isLoading ? <Skeleton h={5} w={24} /> : <NFTListingInfo listingPrice={listedPrice} />}
+                  {nftData.isLoading ? <Skeleton h={5} w={20} mr={4} /> : <NFTListingInfo listingPrice={listedPrice} />}
                 </Text>
               </VStack>
               <NFTCollectionSummary collStats={collStats} isLoading={isCollLoading} collData={collData} />
