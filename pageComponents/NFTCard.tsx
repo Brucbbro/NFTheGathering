@@ -64,29 +64,31 @@ const RarityBadge = ({ label = "", rarity = 0 }) => {
       color: "#000",
     },
     {
-      background: "-webkit-linear-gradient(0deg,#4b4b4b,#9a9a9a,#4b4b4b)",
+      background: "linear-gradient(0deg,#4b4b4b,#9a9a9a,#4b4b4b)",
       WebkitBackgroundClip: "text",
       WebkitTextFillColor: "transparent",
       WebkitTextStroke: "0.7px #111",
       color: "#4b4b4b",
     },
     {
-      background: "-webkit-linear-gradient(0deg,#655125,#bba269,#655125)",
+      background: "linear-gradient(0deg,#655125,#bba269,#655125)",
       WebkitBackgroundClip: "text",
       WebkitTextFillColor: "transparent",
       WebkitTextStroke: "0.7px #111",
       color: "#655125",
     },
     {
-      background: "-webkit-linear-gradient(45deg,#be3402,#e1948c,#be3402)",
+      background: "linear-gradient(45deg,#be3402,#e1948c,#be3402)",
       WebkitBackgroundClip: "text",
       WebkitTextFillColor: "transparent",
       WebkitTextStroke: "0.7px #111",
       color: "#be3402",
     },
   ]
+
   return (
     <Text
+      key={new Date().valueOf()}
       style={{
         fontWeight: "bold",
         fontSize: "14px",
