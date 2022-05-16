@@ -54,4 +54,4 @@ as opposed to `Lines 100-111 `
 
 ```
 
-which could have probably been moved to an `NFTOwnerInfo`, especially if the component kept growing.
+which could have probably been moved to something along the lines of `NFTOwnerInfo.tsx`, especially if the component kept growing.
